@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Portfolio</title>
+    <!-- Google Fonts: Roboto Mono -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome for Social Icons (no integrity attribute) -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Tailwind CSS via CDN (for development) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- AOS (Animate On Scroll) CSS for scroll animations -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+    <!-- Particles.js -->
+    <script src="https://cdn.jsdelivr.net/gh/VincentGarreau/particles.js/particles.min.js"></script>
+    <style>
+      /* Basic reset */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      /* Body styling */
+      body {
+        background-color: #0c0c0c;
+        color: #c0cfcd;
+        font-family: "Roboto Mono", monospace;
+        cursor: none; /* Hide default cursor */
+      }
+      /* Custom Cursor */
+      #custom-cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        border: 2px solid white;
+        mix-blend-mode: difference; /* Invert underlying colors */
+        transition: background-color 0.1s ease-out, border-color 0.1s ease-out,
+          transform 0.1s ease-out;
+      }
+      /* The no-invert class disables cursor inversion */
+      .no-invert {
+      }
+
+      /* Navbar blur effect */
+      .navbar-blur {
+        backdrop-filter: blur(6px);
+        background-color: #0c0c0c;
+      }
+      /* Neon text effect for hero */
+      .neon-text {
+        font-size: 2rem;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5),
+          0 0 10px rgba(255, 255, 255, 0.3), 0 0 20px rgba(255, 255, 255, 0.2);
+        transition: text-shadow 0.3s;
+      }
+      .neon-text:hover {
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.7),
+          0 0 20px rgba(255, 255, 255, 0.5), 0 0 30px rgba(255, 255, 255, 0.4);
+      }
+      /* Hero with parallax-like background */
+      .hero {
+        position: relative;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+      }
+      /* Particles container for Home */
+      #particles-js {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+      /* Hero content above Home particles */
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 0 1rem;
+      }
+      /* Underline and fixed container for roles */
+      #roles {
+        border-bottom: 2px solid #ffffff;
+        display: inline-block;
+        min-height: 2em;
+      }
+      /* Blinking cursor style */
+      .cursor {
+        display: inline;
+        color: #ffffff;
+        animation: blink 1s steps(1) infinite;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+      /* Glow button effect */
+      .glow-btn {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .glow-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      }
+      /* Section backgrounds */
+      .section-dark {
+        background-color: #111;
+      }
+      .section-darker {
+        background-color: #000;
+      }
+      /* About Section: Particles container */
+      #particles-about {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+    </style>
+  </head>
+  <body class="antialiased">
+    <!-- Custom Cursor Element -->
+    <div id="custom-cursor"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar-blur fixed top-0 w-full z-50">
+      <div
+        class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center"
+      >
+        <div class="text-2xl font-extrabold tracking-wide">
+          VARUN R PANICKER
+        </div>
+        <ul class="flex space-x-6 text-lg">
+          <li>
+            <a href="#home" class="hover:text-gray-300 transition">Home</a>
+          </li>
+          <li>
+            <a href="#about" class="hover:text-gray-300 transition">About</a>
+          </li>
+          <li>
+            <a href="#projects" class="hover:text-gray-300 transition"
+              >Projects</a
+            >
+          </li>
+          <li>
+            <a href="#contact" class="hover:text-gray-300 transition"
+              >Contact</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Hero Section with Particles and Side-by-Side Layout -->
+    <section id="home" class="hero">
+      <!-- Particles container for Home -->
+      <div id="particles-js"></div>
+      <!-- Hero content split into two columns -->
+      <div
+        class="hero-content flex flex-col md:flex-row items-center justify-center space-y-6 md:space-y-0 md:space-x-6"
+        data-aos="fade-in"
+        data-aos-duration="1500"
+      >
+        <!-- Image Column (no-invert applied) -->
+        <div class="flex-shrink-0 no-invert">
+          <img
+            src="face.jpg"
+            alt="Varun R Panicker"
+            class="w-56 h-56 md:w-72 md:h-72 rounded-full border-4 border-white shadow-lg object-cover"
+          />
+        </div>
+        <!-- Text Column -->
+        <div class="flex flex-col items-center text-center">
+          <h1
+            class="text-5xl md:text-7xl font-black mb-2 tracking-wider drop-shadow-lg neon-text"
+          >
+            VARUN R PANICKER
+          </h1>
+          <!-- Roles element with typewriter effect and blinking cursor -->
+          <div id="roles" class="text-xl md:text-2xl mb-2"></div>
+          <p class="text-lg md:text-xl mb-4 text-gray-300 drop-shadow-md">
+            Innovative digital solutions that defy expectations.
+          </p>
+          <a
+            href="#projects"
+            class="glow-btn inline-block bg-white text-black px-6 py-3 rounded-full uppercase tracking-wider font-semibold"
+          >
+            CHECK OUT MY PROJECTS
+          </a>
+          <!-- Social Icons Container with no-invert for both icons -->
+          <div class="flex space-x-4 mt-4">
+            <a
+              href="https://www.linkedin.com/in/varun-r-panicker-63221b28b"
+              target="_blank"
+              class="no-invert w-8 h-8 flex items-center justify-center bg-white rounded-full text-black hover:bg-blue-600 hover:text-white transition"
+            >
+              <i class="fab fa-linkedin"></i>
+            </a>
+            <a
+              href="https://github.com/V4run05"
+              target="_blank"
+              class="no-invert w-8 h-8 flex items-center justify-center bg-white rounded-full text-black hover:bg-gray-800 hover:text-white transition"
+            >
+              <i class="fab fa-github"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section with Particles Background -->
+    <section
+      id="about"
+      class="py-16 section-dark relative overflow-hidden"
+      data-aos="fade-up"
+      data-aos-duration="1500"
+    >
+      <!-- Particles container for About Section -->
+      <div id="particles-about"></div>
+      <!-- Content Container -->
+      <div class="max-w-4xl mx-auto relative z-10 text-center px-4">
+        <h2 class="text-4xl font-bold mb-6">About Me</h2>
+        <p class="text-lg text-gray-300 mb-8">
+          I am a creative genius pushing the boundaries of technology and
+          design. My mission is to inspire innovation. Proficient in:
+        </p>
+        <!-- Skills/Highlights Cards -->
+        <div class="grid md:grid-cols-3 gap-8 mt-8">
+          <!-- Skill Card 1 -->
+          <div
+            class="bg-gray-800 p-6 rounded-lg border border-gray-700 shadow-lg hover:scale-105 transition duration-300"
+          >
+            <h3 class="text-2xl text-white font-semibold mb-2">
+              Web Development
+            </h3>
+            <p class="text-gray-400">
+              Building responsive and dynamic websites using modern
+              technologies.
+            </p>
+          </div>
+          <!-- Skill Card 2 -->
+          <div
+            class="bg-gray-800 p-6 rounded-lg border border-gray-700 shadow-lg hover:scale-105 transition duration-300"
+          >
+            <h3 class="text-2xl text-white font-semibold mb-2">
+              Software Engineering
+            </h3>
+            <p class="text-gray-400">
+              Crafting robust software solutions tailored to your needs.
+            </p>
+          </div>
+          <!-- Skill Card 3 -->
+          <div
+            class="bg-gray-800 p-6 rounded-lg border border-gray-700 shadow-lg hover:scale-105 transition duration-300"
+          >
+            <h3 class="text-2xl text-white font-semibold mb-2">
+              Machine Learning
+            </h3>
+            <p class="text-gray-400">
+              Providing innovative AI solutions for real-world problems.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section
+      id="projects"
+      class="py-16 section-darker"
+      data-aos="fade-up"
+      data-aos-duration="1500"
+    >
+      <div class="max-w-6xl mx-auto text-center px-4">
+        <h2 class="text-4xl font-bold mb-8">Our Work</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Project Card 1 -->
+          <div
+            class="bg-black border border-gray-800 p-6 rounded-lg hover:scale-105 transition transform"
+            data-aos="zoom-in"
+            data-aos-duration="1000"
+          >
+            <h3 class="text-2xl font-semibold mb-2">Project One</h3>
+            <p class="text-gray-400">
+              A revolutionary project that challenges conventions with
+              cutting-edge design.
+            </p>
+          </div>
+          <!-- Project Card 2 -->
+          <div
+            class="bg-black border border-gray-800 p-6 rounded-lg hover:scale-105 transition transform"
+            data-aos="zoom-in"
+            data-aos-duration="1000"
+            data-aos-delay="200"
+          >
+            <h3 class="text-2xl font-semibold mb-2">Project Two</h3>
+            <p class="text-gray-400">
+              A creative solution to modern problems, merging art with
+              technology.
+            </p>
+          </div>
+          <!-- Project Card 3 -->
+          <div
+            class="bg-black border border-gray-800 p-6 rounded-lg hover:scale-105 transition transform"
+            data-aos="zoom-in"
+            data-aos-duration="1000"
+            data-aos-delay="400"
+          >
+            <h3 class="text-2xl font-semibold mb-2">Project Three</h3>
+            <p class="text-gray-400">
+              Innovative, sleek, and powerful designs that leave an impact.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section
+      id="contact"
+      class="py-16 section-dark"
+      data-aos="fade-up"
+      data-aos-duration="1500"
+    >
+      <div class="max-w-4xl mx-auto text-center px-4">
+        <h2 class="text-4xl font-bold mb-4">Contact Us</h2>
+        <p class="mb-8 text-lg text-gray-300">
+          Let's get in touch to discuss your next big idea or project.
+        </p>
+        <form class="space-y-4 max-w-xl mx-auto">
+          <input
+            type="text"
+            placeholder="Your Name"
+            class="w-full p-4 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
+          <input
+            type="email"
+            placeholder="Your Email"
+            class="w-full p-4 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
+          <textarea
+            placeholder="Your Message"
+            class="w-full p-4 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          ></textarea>
+          <button
+            type="submit"
+            class="w-full bg-white text-black px-8 py-4 rounded-full uppercase tracking-wider font-semibold hover:bg-gray-200 transition transform hover:scale-105"
+          >
+            Send Message
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-6">
+      <div class="max-w-7xl mx-auto text-center text-gray-500">
+        © 2025 Varun R Panicker | All rights reserved.
+      </div>
+    </footer>
+
+    <!-- AOS Animation Script -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init({ once: true });
+    </script>
+
+    <!-- Smooth Scrolling for Anchor Links -->
+    <script>
+      document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          var target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth" });
+          }
+        });
+      });
+    </script>
+
+    <!-- Particles.js Initialization for Home Section -->
+    <script>
+      window.addEventListener("load", function () {
+        particlesJS("particles-js", {
+          particles: {
+            number: { value: 60, density: { enable: true, value_area: 800 } },
+            color: { value: "#ffffff" },
+            shape: {
+              type: "circle",
+              stroke: { width: 0, color: "#000000" },
+              polygon: { nb_sides: 5 },
+            },
+            opacity: {
+              value: 0.5,
+              random: false,
+              anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false },
+            },
+            size: {
+              value: 3,
+              random: true,
+              anim: { enable: false, speed: 40, size_min: 0.1, sync: false },
+            },
+            line_linked: {
+              enable: true,
+              distance: 150,
+              color: "#ffffff",
+              opacity: 0.4,
+              width: 1,
+            },
+            move: {
+              enable: true,
+              speed: 3,
+              direction: "none",
+              random: false,
+              straight: false,
+              out_mode: "out",
+              bounce: false,
+              attract: { enable: false, rotateX: 600, rotateY: 1200 },
+            },
+          },
+          interactivity: {
+            detect_on: "canvas",
+            events: {
+              onhover: { enable: true, mode: "repulse" },
+              onclick: { enable: true, mode: "push" },
+              resize: true,
+            },
+            modes: {
+              grab: { distance: 400, line_linked: { opacity: 1 } },
+              bubble: {
+                distance: 400,
+                size: 40,
+                duration: 2,
+                opacity: 8,
+                speed: 3,
+              },
+              repulse: { distance: 100, duration: 0.4 },
+              push: { particles_nb: 4 },
+              remove: { particles_nb: 2 },
+            },
+          },
+          retina_detect: true,
+        });
+      });
+    </script>
+
+    <!-- Particles.js Initialization for About Section -->
+    <script>
+      window.addEventListener("load", function () {
+        particlesJS("particles-about", {
+          particles: {
+            number: { value: 60, density: { enable: true, value_area: 800 } },
+            color: { value: "#ffffff" },
+            shape: {
+              type: "circle",
+              stroke: { width: 0, color: "#000000" },
+              polygon: { nb_sides: 5 },
+            },
+            opacity: {
+              value: 0.5,
+              random: false,
+              anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false },
+            },
+            size: {
+              value: 3,
+              random: true,
+              anim: { enable: false, speed: 40, size_min: 0.1, sync: false },
+            },
+            line_linked: {
+              enable: true,
+              distance: 150,
+              color: "#ffffff",
+              opacity: 0.4,
+              width: 1,
+            },
+            move: {
+              enable: true,
+              speed: 3,
+              direction: "none",
+              random: false,
+              straight: false,
+              out_mode: "out",
+              bounce: false,
+              attract: { enable: false, rotateX: 600, rotateY: 1200 },
+            },
+          },
+          interactivity: {
+            detect_on: "canvas",
+            events: {
+              onhover: { enable: true, mode: "repulse" },
+              onclick: { enable: true, mode: "push" },
+              resize: true,
+            },
+            modes: {
+              grab: { distance: 400, line_linked: { opacity: 1 } },
+              bubble: {
+                distance: 400,
+                size: 40,
+                duration: 2,
+                opacity: 8,
+                speed: 3,
+              },
+              repulse: { distance: 100, duration: 0.4 },
+              push: { particles_nb: 4 },
+              remove: { particles_nb: 2 },
+            },
+          },
+          retina_detect: true,
+        });
+      });
+    </script>
+
+    <!-- Typewriter Effect for Roles with Blinking Cursor -->
+    <script>
+      const roles = [
+        "Web Developer",
+        "Software Developer",
+        "Game Developer",
+        "Creative Thinker",
+      ];
+      let roleIndex = 0;
+      let charIndex = 0;
+      let isDeleting = false;
+      const typeSpeed = 150;
+      const pauseTime = 1000;
+
+      function typeRole() {
+        const target = document.getElementById("roles");
+        const currentRole = roles[roleIndex];
+
+        if (!isDeleting) {
+          charIndex++;
+          if (charIndex > currentRole.length) {
+            isDeleting = true;
+            setTimeout(typeRole, pauseTime);
+            return;
+          }
+        } else {
+          charIndex--;
+          if (charIndex < 0) {
+            isDeleting = false;
+            roleIndex = (roleIndex + 1) % roles.length;
+            charIndex = 0;
+          }
+        }
+        target.innerHTML =
+          currentRole.substring(0, charIndex) + '<span class="cursor">|</span>';
+        setTimeout(typeRole, typeSpeed);
+      }
+      window.addEventListener("load", typeRole);
+    </script>
+
+    <!-- Custom Cursor Script with Inversion, except for .no-invert elements -->
+    <script>
+      const customCursor = document.getElementById("custom-cursor");
+      document.addEventListener("mousemove", (e) => {
+        customCursor.style.top = e.clientY + "px";
+        customCursor.style.left = e.clientX + "px";
+
+        // Get the element under the cursor
+        let elem = document.elementFromPoint(e.clientX, e.clientY);
+        // Check if element or any parent has no-invert class
+        if (elem && elem.closest(".no-invert")) {
+          customCursor.style.backgroundColor = "black";
+          customCursor.style.borderColor = "black";
+        } else {
+          let bg = window.getComputedStyle(elem).backgroundColor;
+          if (bg === "rgba(0, 0, 0, 0)" || bg === "transparent") {
+            bg = window.getComputedStyle(document.body).backgroundColor;
+          }
+          let rgb = bg.match(/\d+/g);
+          if (rgb) {
+            let r = parseInt(rgb[0]);
+            let g = parseInt(rgb[1]);
+            let b = parseInt(rgb[2]);
+            let brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            if (brightness < 128) {
+              customCursor.style.backgroundColor = "white";
+              customCursor.style.borderColor = "white";
+            } else {
+              customCursor.style.backgroundColor = "black";
+              customCursor.style.borderColor = "black";
+            }
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MA-CNN for EEG Emotion Recognition - Varun R Panicker</title>
+    <!-- Google Fonts: Roboto Mono -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind CSS via CDN (for development) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Particles.js -->
+    <script src="https://cdn.jsdelivr.net/gh/VincentGarreau/particles.js/particles.min.js"></script>
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <style>
+      /* Basic reset and hide default cursor */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        cursor: none !important;
+      }
+      body {
+        background-color: #0c0c0c;
+        color: #c0cfcd;
+        font-family: "Roboto Mono", monospace;
+      }
+      /* Custom Cursor */
+      /* Custom Cursor Styles */
+      #custom-cursor {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 11000;
+        background-color: white;
+        border: 2px solid white;
+        mix-blend-mode: difference;
+        transition: background-color 0.1s ease-out, border-color 0.1s ease-out;
+        transform: translate(var(--cursor-x, 0px), var(--cursor-y, 0px)) rotate(var(--cursor-angle, 0deg)) scaleX(var(--cursor-scale, 1)) scale(var(--click-scale, 1));
+      }
+
+      /* Underline hover effect for Navbar links */
+      .navbar-blur a {
+        position: relative;
+        text-decoration: none;
+        transition: color 0.3s;
+      }
+
+      .navbar-blur a::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -4px; /* Adjust as needed */
+        width: 0;
+        height: 2px;
+        background-color: currentColor;
+        transition: width 0.3s ease;
+      }
+
+      .navbar-blur a:hover::after {
+        width: 100%;
+      }
+
+      /* Click Animation Keyframes */
+      @keyframes click-animation {
+        0% { transform: scale(1); }
+        50% { transform: scale(0.5); }
+        100% { transform: scale(1); }
+      }
+      .cursor-click {
+        animation: click-animation 0.3s ease-out;
+      }
+
+      /* Hero Section */
+      .hero {
+        position: relative;
+        min-height: 20vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+      }
+      /* Particles container for Hero */
+      #particles-hero {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 1rem;
+      }
+      .neon-text {
+        font-size: 2rem;
+        text-shadow: 0 0 5px rgba(255,255,255,0.5),
+                     0 0 10px rgba(255,255,255,0.3),
+                     0 0 20px rgba(255,255,255,0.2);
+        transition: text-shadow 0.3s;
+      }
+      .neon-text:hover {
+        text-shadow: 0 0 5px rgba(255,255,255,0.7),
+                     0 0 20px rgba(255,255,255,0.5),
+                     0 0 30px rgba(255,255,255,0.4);
+      }
+      /* Glass container for detailed text (About Section) */
+      .glass-box {
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255,255,255,0.2);
+        position: relative;
+        z-index: 1;
+      }
+      /* Particles container for About Section */
+      #particles-about {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+      /* Media Section Styles */
+      .media-section {
+        position: relative;
+        overflow: hidden;
+      }
+      /* Particles container for Media Section */
+      #particles-projects {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 0;
+      }
+      .media-container {
+        position: relative;
+        z-index: 1;
+      }
+      .media-block {
+        background-color: #000;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+        transition: transform 0.3s;
+      }
+      .media-block:hover {
+        transform: scale(1.03);
+      }
+      .media-block img,
+      .media-block video {
+        width: 100%;
+        height: 18rem;
+        object-fit: contain;
+        border-radius: 0.5rem;
+      }
+      .youtube-trigger iframe {
+        width: 100%;
+        height: 18rem;
+        border: none;
+        border-radius: 0.5rem;
+      }
+      /* Lightbox Overlay */
+      #lightbox-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+      }
+      #lightbox-content {
+        max-width: 90%;
+        max-height: 90%;
+        position: relative;
+      }
+      #lightbox-content img,
+      #lightbox-content video,
+      #lightbox-content iframe {
+        width: 100%;
+        height: auto;
+        border-radius: 0.5rem;
+      }
+      #lightbox-close {
+        position: absolute;
+        top: -20px;
+        right: -20px;
+        background: #fff;
+        color: #000;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+
+      /* Glow button effect */
+      .glow-btn {
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .glow-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Custom Cursor -->
+    <div id="custom-cursor"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div id="particles-hero"></div>
+      <div class="hero-content text-center">
+        <h1 class="neon-text text-4xl md:text-5xl font-bold mb-2">
+          MA-CNN for EEG Emotion Recognition
+        </h1>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-4">
+      <div id="particles-about"></div>
+      <div class="max-w-5xl mx-auto px-4 relative z-10">
+        <div class="glass-box p-8 rounded-lg shadow-lg">
+          <h2 class="text-2xl font-bold mb-4">Project Overview</h2>
+          <p class="mb-6 leading-relaxed text-gray-300">
+            This project aims to enhance emotion recognition from EEG signals by leveraging a manifold-aware CNN architecture. By integrating spectral embedding and multi-head attention, subtle spatiotemporal features are captured to provide more accurate and robust affective analysis. The framework effectively reduces noise in EEG data and improves cross-subject generalization, paving the way for advanced mental health diagnostics.
+          </p>
+          <ul class="list-disc list-inside text-gray-300 mb-6">
+            <li>Robust EEG pre-processing with spectral embedding</li>
+            <li>Multi-head attention for simultaneous feature extraction</li>
+            <li>Real-time inference for emotion recognition</li>
+            <li>Enhanced cross-subject generalization for practical applications</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Media Section -->
+    <section class="py-12 relative media-section">
+      <div id="particles-projects"></div>
+      <div class="max-w-6xl mx-auto px-4 relative z-10 media-container">
+        <h2 class="text-2xl font-bold mb-6 text-center">Project Media</h2>
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Image Block -->
+          <div class="media-block lightbox-trigger" data-type="image" data-src="eeg1.jpg">
+            <img src="eeg1.jpg" alt="Project Screenshot 1" />
+          </div>
+
+          <!-- YouTube Video Block -->
+          <div
+            class="media-block youtube-trigger"
+            data-type="youtube"
+            data-src="https://www.youtube.com/embed/T7MKlPYiL48?enablejsapi=1&autoplay=0&mute=1"
+            data-overlay="https://www.youtube.com/embed/T7MKlPYiL48?enablejsapi=1&autoplay=1&mute=1"
+          >
+            <iframe
+              src="https://www.youtube.com/embed/T7MKlPYiL48?enablejsapi=1&autoplay=0&mute=1"
+              allow="autoplay; encrypted-media"
+              allowfullscreen
+              class="w-full h-72 rounded"
+            ></iframe>
+          </div>
+
+          <!-- Additional Image Block -->
+          <div class="media-block lightbox-trigger" data-type="image" data-src="eeg2.jpg">
+            <img src="eeg2.jpg" alt="Project Screenshot 2" />
+          </div>
+
+          <div
+            class="media-block youtube-trigger"
+            data-type="youtube"
+            data-src="https://www.youtube.com/embed/DdAgTEQl_I0?si=3cnVHBpJmtanxcLG&enablejsapi=1&autoplay=0&mute=1"
+            data-overlay="https://www.youtube.com/embed/DdAgTEQl_I0?si=3cnVHBpJmtanxcLG&enablejsapi=1&autoplay=0&mute=1"
+          >
+            <iframe
+              src="https://www.youtube.com/embed/DdAgTEQl_I0?si=3cnVHBpJmtanxcLG&enablejsapi=1&autoplay=0&mute=1"
+              allow="autoplay; encrypted-media"
+              allowfullscreen
+              class="w-full h-72 rounded"
+            ></iframe>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Return to Home Link -->
+    <div class="text-center py-10">
+      <a
+        href="index.html"
+        class="glow-btn inline-block bg-white text-black px-6 py-3 rounded-full uppercase tracking-wider font-semibold hover:bg-gray-200 transition transform hover:scale-105"
+      >
+        Back to Home
+      </a>
+
+    </div>
+
+    <!-- Lightbox Overlay -->
+    <div id="lightbox-overlay" class="flex">
+      <div id="lightbox-content">
+        <button id="lightbox-close">&times;</button>
+        <!-- Media injected dynamically -->
+      </div>
+    </div>
+
+    <!-- Particles.js Initialization for Hero Section -->
+    <script>
+      window.addEventListener("load", function () {
+        particlesJS("particles-hero", {
+          particles: {
+            number: { value: 50, density: { enable: true, value_area: 800 } },
+            color: { value: "#ffffff" },
+            shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 5 } },
+            opacity: { value: 0.5, random: false, anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false } },
+            size: { value: 3, random: true, anim: { enable: false, speed: 40, size_min: 0.1, sync: false } },
+            line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.4, width: 1 },
+            move: { enable: true, speed: 3, direction: "none", random: false, straight: false, out_mode: "out", bounce: false, attract: { enable: false, rotateX: 600, rotateY: 1200 } }
+          },
+          interactivity: {
+            events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
+            modes: {
+              grab: { distance: 400, line_linked: { opacity: 1 } },
+              bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 },
+              repulse: { distance: 100, duration: 0.4 },
+              push: { particles_nb: 4 },
+              remove: { particles_nb: 2 }
+            }
+          },
+          retina_detect: true
+        });
+      });
+    </script>
+
+    <!-- Particles.js Initialization for About Section -->
+    <script>
+      window.addEventListener("load", function () {
+        particlesJS("particles-about", {
+          particles: {
+            number: { value: 60, density: { enable: true, value_area: 800 } },
+            color: { value: "#ffffff" },
+            shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 5 } },
+            opacity: { value: 0.5, random: false, anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false } },
+            size: { value: 3, random: true, anim: { enable: false, speed: 40, size_min: 0.1, sync: false } },
+            line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.4, width: 1 },
+            move: { enable: true, speed: 3, direction: "none", random: false, straight: false, out_mode: "out", bounce: false, attract: { enable: false, rotateX: 600, rotateY: 1200 } }
+          },
+          interactivity: {
+            events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
+            modes: {
+              grab: { distance: 400, line_linked: { opacity: 1 } },
+              bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 },
+              repulse: { distance: 100, duration: 0.4 },
+              push: { particles_nb: 4 },
+              remove: { particles_nb: 2 }
+            }
+          },
+          retina_detect: true
+        });
+      });
+    </script>
+
+    <!-- Particles.js Initialization for Media Section -->
+    <script>
+      window.addEventListener("load", function () {
+        particlesJS("particles-projects", {
+          particles: {
+            number: { value: 60, density: { enable: true, value_area: 800 } },
+            color: { value: "#ffffff" },
+            shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 5 } },
+            opacity: { value: 0.5, random: false, anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false } },
+            size: { value: 3, random: true, anim: { enable: false, speed: 40, size_min: 0.1, sync: false } },
+            line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.4, width: 1 },
+            move: { enable: true, speed: 3, direction: "none", random: false, straight: false, out_mode: "out", bounce: false, attract: { enable: false, rotateX: 600, rotateY: 1200 } }
+          },
+          interactivity: {
+            events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
+            modes: {
+              grab: { distance: 400, line_linked: { opacity: 1 } },
+              bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 },
+              repulse: { distance: 100, duration: 0.4 },
+              push: { particles_nb: 4 },
+              remove: { particles_nb: 2 }
+            }
+          },
+          retina_detect: true
+        });
+      });
+    </script>
+
+    <!-- Particles.js Initialization for Contact Section (if needed) -->
+    <script>
+      window.addEventListener("load", function () {
+        particlesJS("particles-contact", {
+          particles: {
+            number: { value: 50, density: { enable: true, value_area: 800 } },
+            color: { value: "#ffffff" },
+            shape: { type: "circle", stroke: { width: 0, color: "#000000" }, polygon: { nb_sides: 5 } },
+            opacity: { value: 0.5, random: false, anim: { enable: false, speed: 1, opacity_min: 0.1, sync: false } },
+            size: { value: 3, random: true, anim: { enable: false, speed: 40, size_min: 0.1, sync: false } },
+            line_linked: { enable: true, distance: 150, color: "#ffffff", opacity: 0.4, width: 1 },
+            move: { enable: true, speed: 3, direction: "none", random: false, straight: false, out_mode: "out", bounce: false, attract: { enable: false, rotateX: 600, rotateY: 1200 } }
+          },
+          interactivity: {
+            events: { onhover: { enable: true, mode: "repulse" }, onclick: { enable: true, mode: "push" }, resize: true },
+            modes: {
+              grab: { distance: 400, line_linked: { opacity: 1 } },
+              bubble: { distance: 400, size: 40, duration: 2, opacity: 8, speed: 3 },
+              repulse: { distance: 100, duration: 0.4 },
+              push: { particles_nb: 4 },
+              remove: { particles_nb: 2 }
+            }
+          },
+          retina_detect: true
+        });
+      });
+    </script>
+
+    <!-- YouTube IFrame API & Hover Play Script -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <script>
+      let youtubePlayer;
+      function onYouTubeIframeAPIReady() {
+        document.querySelectorAll('.youtube-trigger').forEach((container, index) => {
+          const iframe = container.querySelector('iframe');
+          // Ensure each iframe has a unique ID
+          if (!iframe.id) {
+            iframe.id = 'yt-player-' + index;
+          }
+          // Create a new YT.Player for each iframe
+          new YT.Player(iframe.id, {
+            events: {
+              onReady: function(event) {
+                // Play on hover and pause on mouse leave
+                container.addEventListener('mouseenter', () => {
+                  event.target.playVideo();
+                });
+                container.addEventListener('mouseleave', () => {
+                  event.target.pauseVideo();
+                });
+                // On click, open the lightbox with the overlay src
+                container.addEventListener('click', () => {
+                  const overlaySrc = container.getAttribute('data-overlay');
+                  openLightbox('youtube', overlaySrc);
+                });
+              }
+            }
+          });
+        });
+      }
+    </script>
+
+    <!-- Lightbox Script -->
+    <script>
+      const lightboxTriggers = document.querySelectorAll(".lightbox-trigger");
+      const lightboxOverlay = document.getElementById("lightbox-overlay");
+      const lightboxContent = document.getElementById("lightbox-content");
+      const lightboxClose = document.getElementById("lightbox-close");
+
+      function openLightbox(type, src) {
+        const existingMedia = lightboxContent.querySelector(".lightbox-media");
+        if (existingMedia) {
+          existingMedia.remove();
+        }
+        let mediaElement;
+        if (type === "image") {
+          mediaElement = document.createElement("img");
+          mediaElement.src = src;
+        } else if (type === "video") {
+          mediaElement = document.createElement("video");
+          mediaElement.controls = true;
+          mediaElement.autoplay = true;
+          const sourceEl = document.createElement("source");
+          sourceEl.src = src;
+          sourceEl.type = "video/mp4";
+          mediaElement.appendChild(sourceEl);
+        } else if (type === "youtube") {
+          mediaElement = document.createElement("iframe");
+          mediaElement.src = src + "?autoplay=1&rel=0";
+          mediaElement.allow =
+            "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+          mediaElement.allowFullscreen = true;
+        }
+        mediaElement.classList.add("lightbox-media");
+        mediaElement.style.maxWidth = "100%";
+        mediaElement.style.maxHeight = "80vh";
+        lightboxContent.appendChild(mediaElement);
+        lightboxOverlay.style.display = "flex";
+      }
+
+      lightboxTriggers.forEach(trigger => {
+        trigger.addEventListener("click", () => {
+          const type = trigger.getAttribute("data-type");
+          const src = trigger.getAttribute("data-src");
+          openLightbox(type, src);
+        });
+      });
+
+      lightboxClose.addEventListener("click", () => {
+        lightboxOverlay.style.display = "none";
+        lightboxContent.innerHTML = '<button id="lightbox-close">&times;</button>';
+      });
+      lightboxOverlay.addEventListener("click", (e) => {
+      if (e.target === lightboxOverlay) {
+        lightboxOverlay.style.display = "none";
+        lightboxContent.innerHTML = '<button id="lightbox-close">&times;</button>';
+        }
+      });
+      
+      document.getElementById("lightbox-overlay").addEventListener("click", function(e) {
+        // If the clicked target has the id "lightbox-close", close the overlay.
+        if (e.target.id === "lightbox-close") {
+          lightboxOverlay.style.display = "none";
+          // Reinsert the close button (or reset the innerHTML)
+          lightboxContent.innerHTML = '<button id="lightbox-close">&times;</button>';
+        }
+      });
+    </script>
+
+    <!-- Typewriter Effect for Roles -->
+    <script>
+      const roles = [
+        "Web Developer",
+        "Software Developer",
+        "Game Developer",
+        "Creative Thinker"
+      ];
+      let roleIndex = 0;
+      let charIndex = 0;
+      let isDeleting = false;
+      const typeSpeed = 150;
+      const pauseTime = 1000;
+      function typeRole() {
+        const target = document.getElementById("roles");
+        const currentRole = roles[roleIndex];
+        if (!isDeleting) {
+          charIndex++;
+          if (charIndex > currentRole.length) {
+            isDeleting = true;
+            setTimeout(typeRole, pauseTime);
+            return;
+          }
+        } else {
+          charIndex--;
+          if (charIndex < 0) {
+            isDeleting = false;
+            roleIndex = (roleIndex + 1) % roles.length;
+            charIndex = 0;
+          }
+        }
+        target.innerHTML =
+          currentRole.substring(0, charIndex) + '<span class="cursor">|</span>';
+        setTimeout(typeRole, typeSpeed);
+      }
+      window.addEventListener("load", typeRole);
+    </script>
+
+    <!-- Custom Cursor Script -->
+    <script>
+      let currentX = window.innerWidth / 2;
+      let currentY = window.innerHeight / 2;
+      let targetX = currentX, targetY = currentY;
+      const lagSpeed = 0.75;
+      const tailFactor = 1.5;
+      const threshold = 2;
+      const customCursor = document.getElementById("custom-cursor");
+      document.addEventListener("mousemove", (e) => {
+        targetX = e.clientX;
+        targetY = e.clientY;
+        let elem = document.elementFromPoint(e.clientX, e.clientY);
+        // Hide cursor when hovering over video or YouTube iframe
+        if (
+          elem &&
+          (elem.tagName === "VIDEO" || (elem.tagName === "IFRAME" && elem.closest(".youtube-trigger")))
+        ) {
+          customCursor.style.display = "none";
+        } else {
+          customCursor.style.display = "block";
+          if (elem && elem.closest(".no-invert")) {
+            customCursor.style.backgroundColor = "black";
+            customCursor.style.borderColor = "black";
+          } else {
+            let bg = window.getComputedStyle(elem).backgroundColor;
+            if (bg === "rgba(0, 0, 0, 0)" || bg === "transparent") {
+              bg = window.getComputedStyle(document.body).backgroundColor;
+            }
+            let rgb = bg.match(/\d+/g);
+            if (rgb) {
+              let r = parseInt(rgb[0]);
+              let g = parseInt(rgb[1]);
+              let b = parseInt(rgb[2]);
+              let brightness = (r * 299 + g * 587 + b * 114) / 1000;
+              if (brightness < 128) {
+                customCursor.style.backgroundColor = "white";
+                customCursor.style.borderColor = "gray";
+              } else {
+                customCursor.style.backgroundColor = "black";
+                customCursor.style.borderColor = "gray";
+              }
+            }
+          }
+        }
+      });
+      function animateCursor() {
+        currentX += (targetX - currentX) * lagSpeed;
+        currentY += (targetY - currentY) * lagSpeed;
+
+        const dx = targetX - currentX;
+        const dy = targetY - currentY;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        let angle = 0;
+        let scaleX = 1;
+        if (dist > threshold) {
+          angle = Math.atan2(dy, dx) * (180 / Math.PI);
+          scaleX = 1 + Math.min(dist / 100, tailFactor - 1);
+        }
+
+        customCursor.style.transform = `translate(${currentX - 10}px, ${currentY - 10}px) rotate(${angle}deg) scaleX(${scaleX}) scale(var(--click-scale, 1))`;
+
+        requestAnimationFrame(animateCursor);
+      }
+      animateCursor();
+
+      // Add these lines after your existing animateCursor() function
+
+      // Variables for smooth click-scale animation
+      let currentClickScale = 1;
+      let targetClickScale = 1;
+
+      // On click, set the target click scale to 0.5, then return it to 1 after 300ms
+      document.addEventListener("click", () => {
+        targetClickScale = 0.5;
+        setTimeout(() => {
+          targetClickScale = 1;
+        }, 100);
+      });
+
+      // A function to smoothly update the click-scale variable
+      function animateClickScale() {
+        // Use a smoothing factor (e.g. 0.1)
+        currentClickScale += (targetClickScale - currentClickScale) * 0.1;
+        // Update the CSS variable --click-scale on your custom cursor element
+        customCursor.style.setProperty("--click-scale", currentClickScale);
+        requestAnimationFrame(animateClickScale);
+      }
+      animateClickScale();
+
+    </script>
+
+    <!-- click animation -->
+    <script>
+      document.addEventListener("click", () => {
+        customCursor.style.setProperty("--click-scale", "0.5");
+        setTimeout(() => {
+          customCursor.style.setProperty("--click-scale", "1");
+        }, 300);
+      });
+    </script>
+  </body>
+</html>
